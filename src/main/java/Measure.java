@@ -1,5 +1,6 @@
 import com.nulabinc.zxcvbn.Strength;
 import com.nulabinc.zxcvbn.Zxcvbn;
+import com.sun.prism.paint.Stop;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -10,28 +11,35 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
+import static java.lang.Double.NaN;
+
 public class Measure {
 
     public static void main(String args[]){
-        System.out.println("test");
+        System.out.println("Calculating Password scores. This might take a while.... ");
 
         Zxcvbn mes = new Zxcvbn();
 
-        ArrayList<String> allPw = getPasswordList("D:\\rockyou\\pw.txt");
+        ArrayList<String> allPw = getPasswordList("C:\\Users\\Leuma\\IdeaProjects\\zxcvbnMeasure1\\passwords\\rockyou.txt");
 
-        ArrayList<Double> allPwStr = new ArrayList<>();
+
+        ArrayList<Integer> allPwStr = new ArrayList<>();
+
+        System.out.println("[STATUS]: Finished adding all passwords into a list!");
 
         for (String pw: allPw) {
-            allPwStr.add(mes.measure(pw).getGuessesLog10());
+            int x = (int) mes.measure(pw).getGuessesLog10();
+            allPwStr.add(x);
         }
 
-        double[] arr = allPwStr.stream().mapToDouble(Double::doubleValue).toArray();
+        System.out.println("[STATUS] Finished calculating all password scores!");
 
-        Statistics stats = new Statistics(arr);
+        int[] arr = allPwStr.stream().mapToInt(Integer::intValue).toArray();
+        System.out.println(arr.length);
 
-        System.out.println("MEAN: " + stats.getMean());
-        System.out.println("STANDARD DEV: " + stats.getStdDev());
 
+            System.out.println("MEAN: " + getMean(arr));
+            System.out.println("STANDARD DEV: " + getStdDev(arr));
 
 
 
@@ -42,7 +50,7 @@ public class Measure {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = br.readLine()) != null) {
-                allPw.add(line);
+                allPw.add(line.trim());
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -51,5 +59,25 @@ public class Measure {
         }
 
         return allPw;
+    }
+
+    public static int getMean(int[] data) {
+        double sum = 0.0;
+        for(double a : data)
+            sum += a;
+        return (int) sum/data.length;
+    }
+
+
+    public static int getVariance(int[] data) {
+        double mean = getMean(data);
+        double temp = 0;
+        for(int a :data)
+            temp += (a-mean)*(a-mean);
+        return (int) temp/(data.length-1);
+    }
+
+    public static double getStdDev(int[] data) {
+        return (int) Math.sqrt(getVariance(data));
     }
 }
