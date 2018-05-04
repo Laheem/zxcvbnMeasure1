@@ -17,29 +17,51 @@ public class Measure {
 
     public static void main(String args[]){
         System.out.println("Calculating Password scores. This might take a while.... ");
+        final double AVG_MEASUREMENT = 7;
+        int aboveAvg = 0;
 
         Zxcvbn mes = new Zxcvbn();
 
         ArrayList<String> allPw = getPasswordList("C:\\Users\\Leuma\\IdeaProjects\\zxcvbnMeasure1\\passwords\\rockyou.txt");
 
 
-        ArrayList<Integer> allPwStr = new ArrayList<>();
+        ArrayList<Double> allPwStr = new ArrayList<>();
 
         System.out.println("[STATUS]: Finished adding all passwords into a list!");
+        double weakest = Integer.MAX_VALUE;
+        double strongest = Integer.MIN_VALUE;
+
 
         for (String pw: allPw) {
-            int x = (int) mes.measure(pw).getGuessesLog10();
-            allPwStr.add(x);
+            double x = mes.measure(pw).getGuessesLog10();
+            if(x > strongest){
+                strongest = x;
+            }
+
+            if(weakest > x){
+                weakest = x;
+            }
+
+            if(x > AVG_MEASUREMENT){
+                aboveAvg = aboveAvg + 1;
+            }
+
+            if(x > 0.01) allPwStr.add(x);
+
         }
 
         System.out.println("[STATUS] Finished calculating all password scores!");
 
-        int[] arr = allPwStr.stream().mapToInt(Integer::intValue).toArray();
+        double[] arr = allPwStr.stream().mapToDouble(Double::doubleValue).toArray();
         System.out.println(arr.length);
 
 
             System.out.println("MEAN: " + getMean(arr));
             System.out.println("STANDARD DEV: " + getStdDev(arr));
+            System.out.println("Strongest Password: " + strongest);
+            System.out.println("Weakest Password: " + weakest);
+            System.out.println("Passwords above the average: " + aboveAvg);
+
 
 
 
@@ -61,7 +83,7 @@ public class Measure {
         return allPw;
     }
 
-    public static int getMean(int[] data) {
+    public static double getMean(double[] data) {
         double sum = 0.0;
         for(double a : data)
             sum += a;
@@ -69,15 +91,15 @@ public class Measure {
     }
 
 
-    public static int getVariance(int[] data) {
+    public static int getVariance(double[] data) {
         double mean = getMean(data);
         double temp = 0;
-        for(int a :data)
+        for(double a :data)
             temp += (a-mean)*(a-mean);
         return (int) temp/(data.length-1);
     }
 
-    public static double getStdDev(int[] data) {
-        return (int) Math.sqrt(getVariance(data));
+    public static double getStdDev(double[] data) {
+        return Math.sqrt(getVariance(data));
     }
 }
