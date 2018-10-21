@@ -15,6 +15,7 @@ import static java.lang.Double.NaN;
 
 public class Measure {
 
+    private static final String FILE_PATH = "CHANGEME";
     public static void main(String args[]){
         System.out.println("Calculating Password scores. This might take a while.... ");
         final double AVG_MEASUREMENT = 7;
@@ -22,7 +23,7 @@ public class Measure {
 
         Zxcvbn mes = new Zxcvbn();
 
-        ArrayList<String> allPw = getPasswordList("C:\\Users\\Leuma\\IdeaProjects\\zxcvbnMeasure1\\passwords\\rockyou.txt");
+        ArrayList<String> allPw = getPasswordList(FILE_PATH);
 
 
         ArrayList<Double> allPwStr = new ArrayList<>();
